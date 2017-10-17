@@ -1,0 +1,41 @@
+cd e:/xampp/htdocs/gsc
+
+#Activate virtual env
+source activate gsc
+
+To run the app in local server:
+
+python routes.py
+localhost:5000
+
+
+#Before install HEROKU
+pip freeze > requirements.txt
+touch Procfile (to tell heroku to use gunicorn to execute app)
+heroku create
+
+
+# HEROKU login
+heroku login (Better to do it in cmd)
+
+https://dashboard.heroku.com/apps/salty-shore-53576/settings
+https://salty-shore-53576.herokuapp.com/
+
+git hub heroku master
+git push heroku master (send to deploy)
+
+heroku open
+
+
+
+# GITHUB #
+git remote set-url origin https://github.com/jaimemarcos/gsc.git
+git remote add origin https://github.com/jaimemarcos/gsc.git
+git push -u origin master
+
+git remote -v
+# Verifies the new remote URL
+
+# Pushes the changes from your local to the remote repository you specified as the origin
+git push origin master
+

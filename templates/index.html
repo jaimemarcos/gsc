@@ -1,21 +1,18 @@
 {% extends "layout.html" %}
 
 {% block content %}
-  <main class="hero-section">
-    <div class="container">
+    <section class="grid-x">
       
-      <div class="section-content">
-        <h2>Discover places near you.</h2>
-        <a href="{{ url_for('signup') }}" class="btn-primary">Sign up</a>
-        <a href="{{ url_for('about') }}" class="btn-secondary">Learn more</a> 
+      <div class="medium-6 cells">
+        <h2>Extract, store and report on your Google Search Console data</h2>
+        <a href="{{ url_for('signup') }}" class="button">Create your account Now</a>
+        <a href="{{ url_for('about') }}" class="button">Learn more</a> 
       </div>
 
-      <div class="section-device">
+      <div class="medium-6 cells">
         <img src="static/img/device.png">
       </div>
       
-      <div class="clearfix"></div>
 
-    </div>
-  </main>
+    </section>
 {% endblock %}

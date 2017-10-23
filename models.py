@@ -1,8 +1,11 @@
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug import generate_password_hash, check_password_hash
 
+#from urllib import urlopen
+
 import geocoder
-#import urllib2
+import urllib
+import requests
 import json
 
 
@@ -28,6 +31,24 @@ class User(db.Model):
   def check_password(self, password):
     return check_password_hash(self.pwdhash, password)
 
+
+class Authorization(db.Model):
+  __tablename__ = 'authorization'
+  email = db.Column(db.String(120), primary_key = True)
+  project_key = db.Column(db.String(100))
+  api_key = db.Column(db.String(100))
+  brand_queries = db.Column(db.String(300))
+
+
+  def __init__(self, email, project_key, api_key, brand_queries):
+    self.email = email.lower()
+    self.project_key = project_key
+    self.api_key  = api_key
+    self.brand_queries  = brand_queries
+
+
+
+
 # p = Place()
 # places = p.query("1600 Amphitheater Parkway Mountain View CA")
 class Place(object):
@@ -36,7 +57,7 @@ class Place(object):
     return int(meters / 80)  
 
   def wiki_path(self, slug):
-    return urllib2.urlparse.urljoin("http://en.wikipedia.org/wiki/", slug.replace(' ', '_'))
+    return urllib.urlparse.urljoin("http://en.wikipedia.org/wiki/", slug.replace(' ', '_'))
   
   def address_to_latlng(self, address):
     g = geocoder.google(address)
@@ -46,7 +67,7 @@ class Place(object):
     lat, lng = self.address_to_latlng(address)
     
     query_url = 'https://en.wikipedia.org/w/api.php?action=query&list=geosearch&gsradius=5000&gscoord={0}%7C{1}&gslimit=20&format=json'.format(lat, lng)
-    g = urllib2.urlopen(query_url)
+    g = urllib.urlopen(query_url)
     results = g.read()
     g.close()
 

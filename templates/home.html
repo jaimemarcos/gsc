@@ -1,67 +1,62 @@
-{% extends "layout.html" %}
+{% extends "layoutlogged.html" %}
 
 {% block content %}
-  <main class="hero-section">
-    <div class="container">
+
+      <section class="grid-x">
       
-      <div class="section-tabs">
-        <div class="places">
-          {% for place in places %}
-            <article>
-              <a class="name" href="{{ place['url'] }}" target="_blank">{{ place['name'] }}</a>
-              <p class="walking-distance">{{ place['time'] }} min away</p>
-            </article>
-          {% endfor %}
-        </div>
+      <div class="medium-3 cells secondary">
+        <h2>Welcome</h2>
+        <p>Follow the steps to authorize ...</p>
       </div>
 
-      <div class="section-map">
-        <div class="nav">
+      <div class="medium-9 cells">
+        <h3>Step 1</h3>
+        <p>Introduce your Google Client ID and your Client Secret Key generated from Google API Credentials area</p>
+        <div class="callout secondary">
           <form method="POST" action="/home">
             {{ form.hidden_tag() }}
-            
             <div class="form-group">
-              {% if form.address.errors %}
-                {% for error in form.address.errors %}
+              {{ form.client_ID.label }}
+              {% if form.client_ID.errors %}
+                {% for error in form.project_key.errors %}
                   <p class="error-message">{{ error }}</p>
                 {% endfor %}
               {% endif %}
 
-              {{ form.address(placeholder="Explore nearby") }}
+              {{ form.client_ID(placeholder="Introduce your ") }}
+            </div>
+
+            <div class="form-group">
+              {{ form.client_secret.label }}
+              {% if form.client_secret.errors %}
+                {% for error in form.client_secret.errors %}
+                  <p class="error-message">{{ error }}</p>
+                {% endfor %}
+              {% endif %}
+
+              {{ form.client_secret(placeholder="Introduce your Google Secret key") }}
+            </div>
+
+            <div class="form-group">
+              {{ form.brand_queries.label }}
+              {% if form.brand_queries.errors %}
+                {% for error in form.api_key.errors %}
+                  <p class="error-message">{{ error }}</p>
+                {% endfor %}
+              {% endif %}
+
+              {{ form.brand_queries(placeholder="Introduce your brand queries separated by commas") }}
             </div>
             
-            {{ form.submit(class="btn-primary") }}
+            {{ form.submit(class="button") }}
           </form>
         </div>
+        <hr>
 
-        <div id="map"></div>
       </div>
       
-      <div class="clearfix"></div>
-    </div>
-  </main>
 
-  <script>
-    var planes = [
-      {% for place in places %}
-        ["<h3><a href='{{ place['url'] }}' target='_blank'>{{ place['name'] }}</a></h3> <p>{{ place['time'] }} min away</p>", {{ place['lat'] }}, {{ place['lng'] }} ],
-      {% endfor %}
-    ];
+    </section>
 
-    var map = L.map('map').setView([{{ my_coordinates[0] }}, {{ my_coordinates[1] }}], 15);
-    mapLink = '<a href="http://openstreetmap.org">OpenStreetMap</a>';
-    L.tileLayer(
-      'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; ' + mapLink + ' Contributors',
-        maxZoom: 18,
-      }
-    ).addTo(map);
-
-    for (var i = 0; i < planes.length; i++) {
-      marker = new L.marker([planes[i][1],planes[i][2]])
-        .bindPopup(planes[i][0])
-        .addTo(map);
-    }    
-  </script>
 
 {% endblock %}

@@ -1,0 +1,82 @@
+{% extends "layoutlogged.html" %}
+
+{% block content %}
+
+      <section class="grid-x">
+      
+      <div class="medium-3 cells secondary">
+        <h2>Welcome</h2>
+        
+        <div class="col-sm-4">
+        
+        </div>
+
+
+      </div>
+
+      <div class="medium-9 cells">
+        <h3>Step 3</h3>
+        <p>Introduce the start and end date for what you want to extract the data.</p>
+        <p>Important: Google Search console stores data for 90 days, and last 2 days data is not available.</p>
+
+        <div class="callout secondary">
+          <form method="POST" action="/step3">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+              {{ form.searchproperty.label }}
+              {% if form.searchproperty.errors %}
+                {% for error in form.searchproperty.errors %}
+                  <p class="error-message">{{ error }}</p>
+                {% endfor %}
+              {% endif %}
+
+              {{ form.searchproperty(placeholder="Start date should be like this 2017-03-01") }}
+            </div>
+            
+            <div class="form-group">
+              {{ form.start_date.label }}
+              {% if form.start_date.errors %}
+                {% for error in form.start_date.errors %}
+                  <p class="error-message">{{ error }}</p>
+                {% endfor %}
+              {% endif %}
+
+              {{ form.start_date(placeholder="Start date should be like this 2017-03-01") }}
+            </div>
+
+            <div class="form-group">
+              {{ form.end_date.label }}
+              {% if form.end_date.errors %}
+                {% for error in form.end_date.errors %}
+                  <p class="error-message">{{ error }}</p>
+                {% endfor %}
+              {% endif %}
+
+              {{ form.end_date(placeholder="End date should be like this 2017-03-01") }}
+            </div>
+            
+            {{ form.submit(class="button") }}
+          </form>
+        </div>
+        <hr>
+
+
+
+
+
+
+      </div>
+      
+
+    </section>
+
+
+
+
+
+
+
+
+  
+
+{% endblock %}

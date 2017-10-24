@@ -6,8 +6,12 @@ import webbrowser
 from apiclient import errors
 from apiclient.discovery import build
 from oauth2client.client import OAuth2WebServerFlow
+from oauth2client.file import Storage
 import google.oauth2.credentials
 import google_auth_oauthlib.flow
+
+
+WEBMASTER_CREDENTIALS_FILE_PATH = "webmaster_credentials.dat"
 
 def createflow():
 	# Copy your credentials from the console
@@ -34,14 +38,22 @@ def generate_credentials(flow, code):
 
 	credentials = flow.step2_exchange(code)
 	
+	storage = Storage(WEBMASTER_CREDENTIALS_FILE_PATH)
+	storage.put(credentials)
+	
+	# if credentials is None or credentials.invalid:
+	# 	credentials = acquire_new_oauth2_credentials(secrets_file)
+	return credentials
+
+def get_properties():
+
+	storage = Storage(WEBMASTER_CREDENTIALS_FILE_PATH)
+	credentials = storage.get()
+	
 	# Create an httplib2.Http object and authorize it with our credentials
 	http = httplib2.Http()
-    http = credentials.authorize(http)
-    service = build('webmasters', 'v3', http=http)
-    return service
-
-
-def get_properties(service):
+	http = credentials.authorize(http)
+	service = build('webmasters', 'v3', http=http)
 
 	# Retrieve list of properties in account
 	site_list = service.sites().list().execute()

@@ -4,6 +4,7 @@ from forms import SignupForm, LoginForm, AuthorizationForm, extractForm, Googlec
 from authorize import createflow, authorize, generate_credentials, get_properties
 import requests
 import os
+from oauth2client.client import OAuth2WebServerFlow, Storage
 
 
 app = Flask(__name__)
@@ -124,26 +125,27 @@ def step2():
 def step3():
   if 'email' not in session:
     return redirect(url_for('login'))
-  
 
-  sitesURL = get_properties(credentials)
+  option_list = get_properties()
+  propertyform = extractForm()
+  
 
   if request.method == 'POST':
     if dateform.validate() == False:
-      return render_template('step3.html', form=extractForm)
+      return render_template('step3.html', form=propertyform)
     else:
       # get the property after user authorize
 
       # get the start and end dates from form
-      searchproperty = dateform.searchproperty.data
-      stardate = dateform.start_date.data
-      enddate = dateform.start_date.data
+      searchproperty = propertyform.searchproperty.data
+      stardate = propertyform.start_date.data
+      enddate = propertyform.start_date.data
 
       # save the keys into database
       pass
 
   elif request.method == 'GET':
-    return render_template("step2.html", sitesURL=sitesURL, form=extractForm) #
+    return render_template("step3.html", form=propertyform, option_list=option_list)
 
 
 if __name__ == "__main__":

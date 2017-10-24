@@ -14,6 +14,12 @@
     <form method="POST" action="/step3">
 
       <div class="form-group">
+        {{ form.searchproperty.label }}
+        {% if form.searchproperty.errors %}
+          {% for error in form.searchproperty.errors %}
+            <p class="error-message">{{ error }}</p>
+          {% endfor %}
+        {% endif %}
         <select name="option" width="300px">
           {% for o in option_list %}
           <option value="{{ o }}" SELECTED>{{ o }}</option>

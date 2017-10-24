@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, session, redirect, url_for
-from models import db, User, Authorization, Place
+from models import db, User, Authorization
 from forms import SignupForm, LoginForm, AuthorizationForm, extractForm, GooglecodeForm
 from authorize import createflow, authorize, generate_credentials, get_properties
 import requests
@@ -102,7 +102,8 @@ def step2():
   if 'email' not in session:
     return redirect(url_for('login'))
 
-  flow = createflow()
+  useremail = session['email']
+  flow = createflow(useremail)
   authorizeURL = authorize(flow)
   codeform = GooglecodeForm()
 

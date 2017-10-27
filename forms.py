@@ -1,5 +1,5 @@
 from flask_wtf import Form 
-from wtforms import StringField, PasswordField, SubmitField, SelectField
+from wtforms import StringField, PasswordField, SubmitField, SelectField, validators
 from wtforms.validators import DataRequired, Email, Length
 
 class SignupForm(Form):
@@ -25,7 +25,7 @@ class GooglecodeForm(Form):
   submit = SubmitField("Send code to create credentials")
 
 class extractForm(Form):
-  searchproperty = SelectField(u'Select a Property', validators=[DataRequired("Please enter a property.")])
+  searchproperty = SelectField(u'Select a Property')
   start_date = StringField('Start date', validators=[DataRequired("Please enter a start date.")])
   end_date = StringField('End date', validators=[DataRequired("Please enter a start date.")])
   submit = SubmitField("Submit")

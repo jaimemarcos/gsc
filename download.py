@@ -10,12 +10,14 @@ Sample usage:
 # output folder
 folder = 'output'
 
-import argparse, sys, os, json, datetime, time, csv, codecs, cStringIO, io
+import argparse, sys, os, json, datetime, time, csv, codecs, io, importlib
 from googleapiclient import sample_tools
 
 # make sure unicode is ok
-reload(sys)  
-sys.setdefaultencoding('utf8')
+importlib.reload(sys)  # updated to python 3
+
+# https://stackoverflow.com/questions/28127513/attributeerror-module-object-has-no-attribute-setdefaultencoding
+#sys.setdefaultencoding('utf8')
 
 # list of search types
 search_types = [
@@ -31,7 +33,7 @@ argparser.add_argument('start_date', type=str,
                              'YYYY-MM-DD format.'))
 
 def dates_gen(start_date):
-  'Generate list of dates in YYYY-MM-DD format from start_date to today'
+  #'Generate list of dates in YYYY-MM-DD format from start_date to today'
   result = [start_date.strftime('%Y-%m-%d')]
   day = start_date
   while (day < datetime.date.today()):
@@ -41,7 +43,7 @@ def dates_gen(start_date):
   return result
 
 def clean_name(str):
-  "Remove http:// and https://"
+  #"Remove http:// and https://"
   str = str.replace('http://', '')
   str = str.replace('https://', 's-')
   str = str.replace('/', '')
@@ -77,7 +79,7 @@ def main(argv):
     for search_type in search_types:
       for date in dates:
 
-        print 'Processing ' + web_property + ' ' + search_type + ' ' + date
+        print('Processing ' + web_property + ' ' + search_type + ' ' + date)
         # Get top queries for the date range, sorted by click count, descending.
         request = {
             'startDate': date,
@@ -87,11 +89,11 @@ def main(argv):
             'rowLimit': 5000
         }
         response = execute_request(service, web_property, request)
-        print 'Wait 1 second'
+        print('Wait 1 second')
         time.sleep(1)
 
         if 'rows' not in response:
-          print 'Empty response.'
+          print('Empty response.')
           continue
 
         # save as csv
@@ -114,8 +116,7 @@ def execute_request(service, property_uri, request):
   Returns:
     An array of response rows.
   """
-  return service.searchanalytics().query(
-      siteUrl=property_uri, body=request).execute()
+  return service.searchanalytics().query(siteUrl=property_uri, body=request).execute()
 
 if __name__ == '__main__':
   main(sys.argv)

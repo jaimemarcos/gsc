@@ -5,14 +5,17 @@
 <section class="grid-x">
 <div class="medium-3 cells secondary">
   <h2>Welcome</h2>
+  {% for message in get_flashed_messages() %}
+      <div class="flash alert alert-success col-sm-4" role="success">{{ message }}</div>
+  {% endfor %}
 </div>
 <div class="medium-9 cells">
   <h3>Step 3</h3>
   <p>Introduce the start and end date for what you want to extract the data.</p>
   <p>Important: Google Search console stores data for 90 days, and last 2 days data is not available.</p>
   <div class="callout secondary">
-    <form method="POST" action="/step3">
-
+    <form method="POST" action="/step3" id="properties">
+      {{ form.csrf_token }}
       <div class="form-group">
         {{ form.searchproperty.label }}
         {% if form.searchproperty.errors %}
@@ -20,9 +23,9 @@
             <p class="error-message">{{ error }}</p>
           {% endfor %}
         {% endif %}
-        <select name="option" width="300px">
+        <select name="searchproperty" form="properties"> 
           {% for o in option_list %}
-          <option value="{{ o }}" SELECTED>{{ o }}</option>
+          <option value="{{ o }}">{{ o }}</option>
           {% endfor %}
         </select>
       </div>
@@ -53,6 +56,14 @@
     </form>
   </div>
   <hr>
+  <h3>Your query response</h3>
+  {{ query_response }}
+  {% if query_response is not none %}   
+    {{ query_response }}
+  {% else %}
+    NONE
+  {%endif %}
+  
 </div>
 </section>
 

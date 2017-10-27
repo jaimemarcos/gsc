@@ -1,9 +1,11 @@
-from flask import Flask, render_template, request, session, redirect, url_for
+from flask import Flask, render_template, request, session, redirect, url_for, flash
 from models import db, User, Authorization
 from forms import SignupForm, LoginForm, AuthorizationForm, extractForm, GooglecodeForm
 from authorize import createflow, authorize, generate_credentials, get_properties
+from gscextract import generate_request, execute_request
 import requests
 import os
+import sys
 from oauth2client.client import OAuth2WebServerFlow, Storage
 
 
@@ -59,8 +61,11 @@ def login():
 
       user = User.query.filter_by(email=email).first()
       if user is not None and user.check_password(password):
-        session['email'] = form.email.data 
-        return redirect(url_for('home'))
+        session['email'] = form.email.data
+        if os.stat("webmaster_credentials.dat").st_size == 0:
+          return redirect(url_for('home'))
+        else:
+          return redirect(url_for('step2'))
       else:
         return redirect(url_for('login'))
 
@@ -81,6 +86,7 @@ def home():
 
   if request.method == 'POST':
     if authoform.validate() == False:
+      flash('Not valid form')
       return render_template('home.html', form=authoform)
     else:
       # get the project and API key
@@ -128,22 +134,31 @@ def step3():
     return redirect(url_for('login'))
 
   option_list = get_properties()
+  option_list2 = list(option_list)
+  listofchoices = list(zip(option_list,option_list2))
+
   propertyform = extractForm()
-  
+  propertyform.searchproperty.choices = listofchoices
+
 
   if request.method == 'POST':
-    if dateform.validate() == False:
-      return render_template('step3.html', form=propertyform)
+    if propertyform.validate() == False:
+      flash('Form validation not passed')
+      return render_template('step3.html', form=propertyform, option_list=option_list)
     else:
-      # get the property after user authorize
+      # get the web property, start and end dates from form
+      property_uri = propertyform.searchproperty.data
+      start_date = propertyform.start_date.data
+      end_date = propertyform.end_date.data
 
-      # get the start and end dates from form
-      searchproperty = propertyform.searchproperty.data
-      stardate = propertyform.start_date.data
-      enddate = propertyform.start_date.data
+      # generate a request to searchanalytics to extract data
+      query_response = generate_request(property_uri, start_date, end_date)
 
-      # save the keys into database
-      pass
+      if query_response:
+        flash('New entry was successfully posted')
+
+      # return those results
+      return render_template('step3.html', form=propertyform, option_list=option_list, query_response=query_response)
 
   elif request.method == 'GET':
     return render_template("step3.html", form=propertyform, option_list=option_list)

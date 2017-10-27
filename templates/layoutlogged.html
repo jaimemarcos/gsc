@@ -3,10 +3,7 @@
   <head>
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:300,400,600' rel='stylesheet'>
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.4.3/css/foundation.min.css">
-    <!-- <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet" > -->
-
-    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.css" />
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js"></script>
+<!--     <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet" > -->  
   </head>
   <body>
     <header>
@@ -49,4 +46,18 @@
       </div>
     </footer> -->
   </body>
+  <script type="text/javascript">
+
+window.onhashchange = function() { 
+   var string = document.documentURI;
+   if (string.startsWith('/step2?')){
+      console.log('it starts');
+      var params = new URLSearchParams(document.location.search.substring(1));
+      var code = params.get("code");
+      document.getElementById("google_code").value = code;
+   }  
+}
+
+
+  </script>
 </html>

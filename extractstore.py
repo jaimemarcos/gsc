@@ -24,7 +24,7 @@ To use:
  
 Sample usage:
  
-  $ python search-analytics-api-sample.py 'https://www.example.com/' '2015-05-01' '2015-05-30'
+  $ python extractstore.py 'https://www.micamper.es/' '2017-09-01' '2017-09-02'
 '''
  
 import argparse
@@ -77,8 +77,7 @@ def execute_request(service, property_uri, request):
     Returns:
         An array of response rows.
     '''
-    return service.searchanalytics().query(
-        siteUrl=property_uri, body=request).execute()
+    return service.searchanalytics().query(siteUrl=property_uri, body=request).execute()
  
 def print_table(response, title):
     '''Prints out a response table.
@@ -92,7 +91,7 @@ def print_table(response, title):
     #print title + ':'
  
     if 'rows' not in response:
-        print 'Empty response'
+        print('Empty response')
         return
  
     rows = response['rows']
@@ -113,11 +112,11 @@ def print_table(response, title):
  
 # Fill out with your MySQL database information
  
-dbUser = '' // MySQL Username
-dbPassword = '' // MySQL Password
-dbHost = 'localhost' // MySQL Host
-dbPort = 3306 // MySQL Host Port
-dbSchema = '' // MySQL Database Name
+dbUser = 'row_format' # MySQL Username
+dbPassword = 'password' # MySQL Password
+dbHost = 'localhost' # MySQL Host
+dbPort = 3306 #// MySQL Host Port
+dbSchema = 'gscusers' #// MySQL Database Name
  
 #based on https://bitbucket.org/richardpenman/csv2mysql
 # suppress annoying mysql warnings
@@ -225,7 +224,7 @@ def safe_col(s):
  
  
 def putCsvToDb(input_file, user, password, host, port, table, database):
-    print "Importing `%s' into MySQL database `%s.%s'" % (input_file, database, table)
+    print("Importing `%s' into MySQL database `%s.%s'" % (input_file, database, table))
     db = MySQLdb.connect(host=host, user=user, passwd=password, port = port)
     cursor = db.cursor()
     # create database and if doesn't exist
@@ -233,9 +232,9 @@ def putCsvToDb(input_file, user, password, host, port, table, database):
     db.select_db(database)
  
     # define table
-    print 'Analyzing column types ...'
+    print('Analyzing column types ...')
     col_types = get_col_types(input_file)
-    print col_types
+    print(col_types)
  
     header = None
     for row in csv.reader(open(input_file)):
@@ -244,7 +243,7 @@ def putCsvToDb(input_file, user, password, host, port, table, database):
         else:
             header = [safe_col(col) for col in row]
             schema_sql = get_schema(table, header, col_types)
-            print schema_sql
+            print(schema_sql)
             # create table
             #cursor.execute('DROP TABLE IF EXISTS %s;' % table)
             cursor.execute(schema_sql)
@@ -254,14 +253,14 @@ def putCsvToDb(input_file, user, password, host, port, table, database):
             except MySQLdb.OperationalError:
                 pass # index already exists
  
-            print 'Inserting rows ...'
+            print('Inserting rows ...')
             # SQL string for inserting data
             insert_sql = get_insert(table, header)
  
     # commit rows to database
-    print 'Committing rows to database ...'
+    print('Committing rows to database ...')
     db.commit()
-    print 'Done!'
+    print('Done!')
  
 def convertLongFileNames():
     os.chdir(".")

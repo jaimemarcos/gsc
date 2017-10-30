@@ -26,6 +26,6 @@ class GooglecodeForm(Form):
 
 class extractForm(Form):
   searchproperty = SelectField(u'Select a Property')
-  start_date = StringField('Start date', validators=[DataRequired("Please enter a start date.")])
-  end_date = StringField('End date', validators=[DataRequired("Please enter a start date.")])
+  start_date = StringField('Start date', validators=[DataRequired("Please enter a start date."), Length(min=10, max=10)])
+  end_date = StringField('End date', validators=[DataRequired("Please enter a start date."), Length(min=10, max=10)])
   submit = SubmitField("Submit")

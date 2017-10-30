@@ -7,11 +7,10 @@ import requests
 import os
 import sys
 from oauth2client.client import OAuth2WebServerFlow, Storage
-
+import config
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:password@localhost/gscusers'
-SQLALCHEMY_TRACK_MODIFICATIONS = False
 db.init_app(app)
 app.secret_key = "development-key"
 

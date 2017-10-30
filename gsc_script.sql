@@ -26,11 +26,15 @@ api_key VARCHAR(100) not null,
 brand_queries VARCHAR(300) not null
 );
 
-
 SELECT * FROM authorization;
 
+CREATE TABLE property (
+email VARCHAR(120) PRIMARY KEY,
+project_key VARCHAR(100) not null,
+api_key VARCHAR(100) not null,
+brand_queries VARCHAR(300) not null
+);
 
-SELECT * FROM authorization;
 
 
     

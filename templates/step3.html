@@ -3,23 +3,33 @@
 {% block content %}
 
 <section class="grid-x grid-margin-x">
-<div class="medium-3 cell secondary"> 
+<div class="medium-4 cell secondary"> 
   <ul class="vertical menu">
   <li><a href="/settings">Settings</a></li>
-  <li><a href="#">Two</a></li>
 </ul>
   {% for message in get_flashed_messages() %}
   <div class="primary callout">
   <p>{{ message }}</p>
   </div>
   {% endfor %}
+  <hr>
+    <h5>Branded queries by property</h5>
+    <ol>
+    {% for brand_queries in branded_queries %}
+    <li>
+      <small><strong>Property:</strong> {{ brand_queries[0]}}</small> <br>
+      <small><strong>Brand terms:</strong> {{ brand_queries[1] }}</small>
+    </li>
+    <hr>
+    {% endfor %}
+    </ol>
 </div>
-<div class="medium-9 cell">
+<div class="medium-8 cell">
   <h2>Ready to extract</h2>
-  <h3>Introduce your properties the start and end dates</h3>
+  <h3>Select your property, branded queries to match, and the start to end dates</h3>
   <p>This will generate a csv file in the output folder and record rows into a table in your system.</p>
   <p class="warning callout"><small>Important: Google Search console stores data for 90 days, and last 2 days data is not available. End date should be at least 3 days before today</small></p>
-  <div class="callout secondary">
+  <div class="callouts">
     <form method="POST" action="/step3" id="properties">
       {{ form.csrf_token }}
       <div class="medium-12 cell">
@@ -52,7 +62,7 @@
             <p class="label warning">{{ error }}</p>
           {% endfor %}
         {% endif %}
-        {{ form.start_date(placeholder="Start date should be like this 2017-03-01") }}
+        {{ form.start_date(placeholder="Use this format 2017-03-01") }}
       </div>
       <div class="medium-6 cell">
         {{ form.end_date.label }}
@@ -61,19 +71,11 @@
             <p class="label warning">{{ error }}</p>
           {% endfor %}
         {% endif %}
-        {{ form.end_date(placeholder="End date should be like this 2017-03-01") }}
+        {{ form.end_date(placeholder="Use this format this 2017-03-01") }}
       </div>
       </div>
       {{ form.submit(class="button") }}
     </form>
-  </div>
-  <div>
-    <h4>List of branded queries by property</h4>
-    {% for brand_queries in branded_queries %}
-      <strong>Property:</strong> {{ brand_queries[0]}} <br>
-      <strong>Brand terms:</strong> {{ brand_queries[1] }}
-      <hr>
-    {% endfor %}
   </div>
 </div>
 </section>

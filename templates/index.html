@@ -1,18 +1,15 @@
 {% extends "layout.html" %}
-
 {% block content %}
-    <section class="grid-x">
-      
-      <div class="medium-6 cells">
-        <h2>Extract, store and report on your Google Search Console data</h2>
-        <a href="{{ url_for('signup') }}" class="button">Create your account Now</a>
-        <a href="{{ url_for('about') }}" class="button">Learn more</a> 
+    <section class="grid-x">     
+      <div class="medium-6 cell">
+        <h1>Get all your Google Search Console data</h1>
+        <h2>No more 90 days restrictions!</h2>
+        <p class="lead">This web app allows you to extract and store all your search data <b>without interacting with Command line tools.</b></p>
+        <a href="{{ url_for('signup') }}" class="button large">Create your account NOW</a>
+        <a href="{{ url_for('about') }}" class="button large hollow">Learn more</a> 
       </div>
-
-      <div class="medium-6 cells">
+      <div class="medium-6 cell">
         <img src="static/img/device.png">
       </div>
-      
-
     </section>
 {% endblock %}

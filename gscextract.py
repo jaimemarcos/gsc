@@ -86,15 +86,16 @@ def create_table(db2,cursor,property_uri):
     table_property = table_property.replace(".", '_')
 
     # Create table as per requirement with the following fields
-    # ('query', 'country', 'date_query', 'page', 'device', 'url_parsed', 'clicks', 'impressions', 'ctr', 'position', 'querytype')
+    # (query, country, date_query, page, device, url_parsed, uri, clicks, impressions, ctr, position, querytype)
     sql = """CREATE TABLE IF NOT EXISTS `%s` (
-        id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        id INT AUTO_INCREMENT PRIMARY KEY,
         query VARCHAR(300),
         country VARCHAR(5),
         date_query DATE,
         page VARCHAR(200),
         device VARCHAR(10),
         url_parsed VARCHAR(200),
+        uri VARCHAR(200),
         clicks INT,
         impressions INT,
         ctr FLOAT(6,3),
@@ -199,6 +200,8 @@ def export_insert(response, queriesfromdb, property_uri,date,cursor,tablename):
     if not os.path.exists(folder):
         os.makedirs(folder)
 
+    columns = "query, country, date_query, page, device, url_parsed, uri, clicks, impressions, ctr, position, querytype"
+
     # createa filename and iterate over the response rows. Insert into csv and db
     filename = folder + '/' + clean_name(property_uri) + '-' + date +".csv"
     with open(filename, 'a', newline='') as f:
@@ -218,20 +221,27 @@ def export_insert(response, queriesfromdb, property_uri,date,cursor,tablename):
                             row['keys'][3], # page
                             row['keys'][4], # device
                             'home' if str(row['keys'][3].split(property_uri)[1]).split('/')[0] == '' else str(row['keys'][3].split(property_uri)[1]).split('/')[0],  # url_parsed (urlparse.urlparse(row['keys'][3]).path).split('/')[0],
+                            '/' if str(row['keys'][3].split(property_uri)[1]) == '' else '/'.join(str(row['keys'][3].split(property_uri)[1])), # get the URI
                             row['clicks'], # clicks
                             row['impressions'], # impressions
                             round(row['ctr'],2), # ctr
                             round(row['position'],2), #position
                             querytype)
 
-            # Write to csv                   
+            # Write to csv
+            print(rowtoinsert)                  
             writer.writerow(rowtoinsert)
 
             # Store into database
-            query_columns = "query,country,date_query,page,device,url_parsed,clicks,impressions,ctr,position,querytype"
-            insert_query = ''' INSERT INTO %s VALUES (%s) ''' % (tablename, rowtoinsert)
-            print(insert_query)
-            cursor.execute(insert_query)
+
+            sql = "INSERT INTO %s" % (tablename) + " VALUES (NULL, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);" 
+
+            cursor.execute(sql, list(rowtoinsert))
+
+            # "INSERT INTO my_table VALUES (%s, %s, %s);"
+            # insert_query = ''' INSERT INTO `%s` (`%s`) VALUES `%s` ;''' % (tablename, columns, rowtoinsert)
+            # print(insert_query)
+            # cursor.execute(insert_query)
 
     f.close()
 

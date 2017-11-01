@@ -465,12 +465,12 @@ img {
 textarea {
   height: auto;
   min-height: 50px;
-  border-radius: 10px; }
+  border-radius: 5px; }
 
 select {
   box-sizing: border-box;
   width: 100%;
-  border-radius: 10px; }
+  border-radius: 5px; }
 
 .map_canvas img,
 .map_canvas embed,
@@ -486,7 +486,7 @@ button {
      -moz-appearance: none;
           appearance: none;
   border: 0;
-  border-radius: 10px;
+  border-radius: 5px;
   background: transparent;
   line-height: 1;
   cursor: auto; }
@@ -557,9 +557,9 @@ h3, .h3,
 h4, .h4,
 h5, .h5,
 h6, .h6 {
-  font-family: "Helvetica Neue", Helvetica, Roboto, Arial, sans-serif;
+  font-family: Roboto, Helvetica, Arial, sans-serif;
   font-style: normal;
-  font-weight: normal;
+  font-weight: bold;
   color: inherit;
   text-rendering: optimizeLegibility; }
   h1 small, .h1 small,
@@ -572,22 +572,24 @@ h6, .h6 {
     color: #cacaca; }
 
 h1, .h1 {
-  font-size: 1.5rem;
-  line-height: 1.4;
+  font-size: 1.3rem;
+  line-height: 1.3;
   margin-top: 0;
-  margin-bottom: 0.5rem; }
+  margin-bottom: 0.8rem; }
 
 h2, .h2 {
-  font-size: 1.25rem;
-  line-height: 1.4;
+  font-size: 1.1rem;
+  line-height: 1.1;
   margin-top: 0;
-  margin-bottom: 0.5rem; }
+  margin-bottom: 0.8rem;
+  color: #00749f; }
 
 h3, .h3 {
-  font-size: 1.1875rem;
+  font-size: 1rem;
   line-height: 1.4;
   margin-top: 0;
-  margin-bottom: 0.5rem; }
+  margin-bottom: 0.8rem;
+  color: #666; }
 
 h4, .h4 {
   font-size: 1.125rem;
@@ -609,11 +611,11 @@ h6, .h6 {
 
 @media print, screen and (min-width: 40em) {
   h1, .h1 {
-    font-size: 3rem; }
+    font-size: 2.3rem; }
   h2, .h2 {
-    font-size: 2.5rem; }
+    font-size: 2rem; }
   h3, .h3 {
-    font-size: 1.9375rem; }
+    font-size: 1.8rem; }
   h4, .h4 {
     font-size: 1.5625rem; }
   h5, .h5 {
@@ -705,7 +707,7 @@ kbd {
   background-color: #e6e6e6;
   font-family: Consolas, "Liberation Mono", Courier, monospace;
   color: #0a0a0a;
-  border-radius: 10px; }
+  border-radius: 5px; }
 
 .subheader {
   margin-top: 0.2rem;
@@ -829,7 +831,7 @@ textarea {
   margin: 0 0 1rem;
   padding: 0.5rem;
   border: 1px solid #cacaca;
-  border-radius: 10px;
+  border-radius: 5px;
   background-color: #fefefe;
   box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.1);
   font-family: inherit;
@@ -881,7 +883,7 @@ textarea[readonly] {
   -webkit-appearance: none;
      -moz-appearance: none;
           appearance: none;
-  border-radius: 10px; }
+  border-radius: 5px; }
 
 input[type='search'] {
   box-sizing: border-box; }
@@ -1016,7 +1018,7 @@ select {
      -moz-appearance: none;
           appearance: none;
   border: 1px solid #cacaca;
-  border-radius: 10px;
+  border-radius: 5px;
   background-color: #fefefe;
   font-family: inherit;
   font-size: 1rem;
@@ -1196,7 +1198,7 @@ select {
   padding: 0.85em 1em;
   -webkit-appearance: none;
   border: 1px solid transparent;
-  border-radius: 10px;
+  border-radius: 5px;
   transition: background-color 0.25s ease-out, color 0.25s ease-out;
   font-size: 0.9rem;
   line-height: 1;
@@ -1673,7 +1675,7 @@ a.button:hover, a.button:focus {
   display: inline-block;
   width: 1.4rem;
   height: 1.4rem;
-  border-radius: 10px;
+  border-radius: 5px;
   background-color: #0088bb;
   transition: all 0.2s ease-in-out;
   -ms-touch-action: manipulation;
@@ -1733,7 +1735,7 @@ a.button:hover, a.button:focus {
   display: block;
   width: 4rem;
   height: 2rem;
-  border-radius: 10px;
+  border-radius: 5px;
   background: #cacaca;
   transition: all 0.25s ease-out;
   font-weight: inherit;
@@ -1749,7 +1751,7 @@ a.button:hover, a.button:focus {
     width: 1.5rem;
     height: 1.5rem;
     transform: translate3d(0, 0, 0);
-    border-radius: 10px;
+    border-radius: 5px;
     background: #fefefe;
     transition: all 0.25s ease-out;
     content: ''; }
@@ -2479,9 +2481,14 @@ a.button:hover, a.button:focus {
   padding: 0.5rem;
   -ms-flex-wrap: wrap;
       flex-wrap: wrap; }
+
+.top-bar {
+  border-bottom: 1px solid #e6e6e6;
+}
+
   .top-bar,
   .top-bar ul {
-    background-color: #e6e6e6; }
+    background-color: #fff; }
   .top-bar input {
     max-width: 200px;
     margin-right: 1rem; }
@@ -2582,7 +2589,7 @@ a.button:hover, a.button:focus {
     clear: both; }
   .pagination li {
     margin-right: 0.0625rem;
-    border-radius: 10px;
+    border-radius: 5px;
     font-size: 0.875rem;
     display: none; }
     .pagination li:last-child, .pagination li:first-child {
@@ -2594,7 +2601,7 @@ a.button:hover, a.button:focus {
   .pagination button {
     display: block;
     padding: 0.1875rem 0.625rem;
-    border-radius: 10px;
+    border-radius: 5px;
     color: #0a0a0a; }
     .pagination a:hover,
     .pagination button:hover {
@@ -2681,7 +2688,7 @@ a.button:hover, a.button:focus {
   visibility: hidden;
   display: none;
   border: 1px solid #cacaca;
-  border-radius: 10px;
+  border-radius: 5px;
   background-color: #fefefe;
   font-size: 1rem; }
   .dropdown-pane.is-opening {
@@ -2768,7 +2775,7 @@ a.button:hover, a.button:focus {
   margin: 0 0 1rem 0;
   padding: 1rem;
   border: 1px solid rgba(10, 10, 10, 0.25);
-  border-radius: 10px;
+  border-radius: 5px;
   background-color: white;
   color: #0a0a0a; }
   .callout > :first-child {
@@ -2816,7 +2823,7 @@ a.button:hover, a.button:focus {
       flex-grow: 1;
   margin-bottom: 1rem;
   border: 1px solid #e6e6e6;
-  border-radius: 10px;
+  border-radius: 5px;
   background: #fefefe;
   box-shadow: none;
   overflow: hidden;
@@ -2910,7 +2917,7 @@ html.is-reveal-open body {
   display: none;
   padding: 1rem;
   border: 1px solid #cacaca;
-  border-radius: 10px;
+  border-radius: 5px;
   background-color: #fefefe;
   position: relative;
   top: 100px;
@@ -2974,7 +2981,7 @@ table {
   border-collapse: collapse;
   width: 100%;
   margin-bottom: 1rem;
-  border-radius: 10px; }
+  border-radius: 5px; }
   table thead,
   table tbody,
   table tfoot {
@@ -3080,7 +3087,7 @@ table.hover:not(.unstriped) tr:nth-of-type(even):hover {
 .label {
   display: inline-block;
   padding: 0.33333rem 0.5rem;
-  border-radius: 10px;
+  border-radius: 5px;
   font-size: 0.8rem;
   line-height: 1;
   white-space: nowrap;
@@ -3112,7 +3119,7 @@ table.hover:not(.unstriped) tr:nth-of-type(even):hover {
 .progress {
   height: 1rem;
   margin-bottom: 1rem;
-  border-radius: 10px;
+  border-radius: 5px;
   background-color: #cacaca; }
   .progress.primary .progress-meter {
     background-color: #0088bb; }
@@ -3135,7 +3142,7 @@ table.hover:not(.unstriped) tr:nth-of-type(even):hover {
   width: 0%;
   height: 100%;
   background-color: #0088bb;
-  border-radius: 10px; }
+  border-radius: 5px; }
 
 .progress-meter-text {
   position: absolute;
@@ -3149,7 +3156,7 @@ table.hover:not(.unstriped) tr:nth-of-type(even):hover {
   font-weight: bold;
   color: #fefefe;
   white-space: nowrap;
-  border-radius: 10px; }
+  border-radius: 5px; }
 
 .has-tip {
   position: relative;
@@ -3164,7 +3171,7 @@ table.hover:not(.unstriped) tr:nth-of-type(even):hover {
   z-index: 1200;
   max-width: 10rem;
   padding: 0.75rem;
-  border-radius: 10px;
+  border-radius: 5px;
   background-color: #0a0a0a;
   font-size: 80%;
   color: #fefefe; }
@@ -3343,7 +3350,7 @@ table.hover:not(.unstriped) tr:nth-of-type(even):hover {
   max-width: 100%;
   margin-bottom: 1rem;
   border: solid 4px #fefefe;
-  border-radius: 10px;
+  border-radius: 5px;
   box-shadow: 0 0 0 1px rgba(10, 10, 10, 0.2);
   line-height: 0; }
 

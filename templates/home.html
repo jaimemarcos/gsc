@@ -1,16 +1,12 @@
 {% extends "layoutlogged.html" %}
-
 {% block content %}
-
       <section class="grid-x">
-      
       <div class="medium-3 cells secondary">
-        <h2>Welcome</h2>
-        <p>Follow the steps to authorize ...</p>
       </div>
-
       <div class="medium-9 cells">
-        <h3>Step 1</h3>
+        <h1>Welcome</h1>
+        <p>Follow the steps to authorize your requests to Google:</p>
+        <h2>Step 1</h2>
         <p>Introduce your Google Client ID and your Client Secret Key generated from Google API Credentials area</p>
         <div class="callout secondary">
           <form method="POST" action="/home">
@@ -23,7 +19,7 @@
                 {% endfor %}
               {% endif %}
 
-              {{ form.client_ID(placeholder="Introduce your ") }}
+              {{ form.client_ID(placeholder="Introduce your code project ID") }}
             </div>
 
             <div class="form-group">
@@ -33,30 +29,11 @@
                   <p class="error-message">{{ error }}</p>
                 {% endfor %}
               {% endif %}
-
               {{ form.client_secret(placeholder="Introduce your Google Secret key") }}
             </div>
-
-            <div class="form-group">
-              {{ form.brand_queries.label }}
-              {% if form.brand_queries.errors %}
-                {% for error in form.api_key.errors %}
-                  <p class="error-message">{{ error }}</p>
-                {% endfor %}
-              {% endif %}
-
-              {{ form.brand_queries(placeholder="Introduce your brand queries separated by commas") }}
-            </div>
-            
             {{ form.submit(class="button") }}
           </form>
         </div>
-        <hr>
-
       </div>
-      
-
     </section>
-
-
 {% endblock %}

@@ -1,26 +1,34 @@
 {% extends "layout.html" %}
 
 {% block content %}
-  <main class="container signup-section">
-    <div class="section-content">
-      <h2>Log in</h2>
+<main class="container signup-section">
+<div class="section-content">
+<h2>Log in</h2>
 
-      <form method="POST" action="/login">
-        {{ form.hidden_tag() }}
+{% for message in get_flashed_messages() %}
+  <div class="warning callout">
+  <p>{{ message }}</p>
+  </div>
+{% endfor %}
 
-        <div class="form-group">
-          {{ form.email.label }}
-          {{ form.email }}
-        </div>
 
-        <div class="form-group">
-          {{ form.password.label }}
-          {{ form.password }}
-        </div>
 
-        {{ form.submit(class="btn-primary") }}
+<form method="POST" action="/login">
+{{ form.hidden_tag() }}
 
-      </form>
-    </div>
-  </main>
+<div class="form-group">
+  {{ form.email.label }}
+  {{ form.email }}
+</div>
+
+<div class="form-group">
+  {{ form.password.label }}
+  {{ form.password }}
+</div>
+
+{{ form.submit(class="btn-primary") }}
+
+</form>
+</div>
+</main>
 {% endblock %}

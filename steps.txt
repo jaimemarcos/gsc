@@ -3,7 +3,6 @@ source activate gsc
 
 # List all the libraries: https://stackoverflow.com/questions/12939975/how-to-list-all-installed-packages-and-their-versions-in-python
 pip list
-
 To run the app in local server:
 
 python routes.py

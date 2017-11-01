@@ -25,7 +25,7 @@ from oauth2client.client import OAuth2WebServerFlow
 from oauth2client.file import Storage
 from flask_sqlalchemy import SQLAlchemy
 from flask import session, flash
-from models import db, User, Authorization
+from models import db, User, Authorization, Property
 import config
 
 
@@ -71,6 +71,40 @@ def clean_name(str):
   str = str.replace('/', '')
   return str
 
+
+def create_dbconexion():
+    try:
+        db2 = MySQLdb.connect(unix_socket = '/tmp/mysql.sock',host=DBHOST, user=DBUSER, passwd=DBPASSWORD, port = DBPORT, db=DBSCHEMA)
+    except (MySQLdb.Error, MySQLdb.Warning) as e:
+        print(e)
+        return None
+    return db2
+
+def create_table(db2,cursor,property_uri):
+
+    table_property = clean_name(property_uri)
+    table_property = table_property.replace(".", '_')
+
+    # Create table as per requirement with the following fields
+    # ('query', 'country', 'date_query', 'page', 'device', 'url_parsed', 'clicks', 'impressions', 'ctr', 'position', 'querytype')
+    sql = """CREATE TABLE IF NOT EXISTS `%s` (
+        id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        query VARCHAR(300),
+        country VARCHAR(5),
+        date_query DATE,
+        page VARCHAR(200),
+        device VARCHAR(10),
+        url_parsed VARCHAR(200),
+        clicks INT,
+        impressions INT,
+        ctr FLOAT(6,3),
+        position FLOAT(6,3),
+        querytype VARCHAR(15))""" % (table_property)
+
+    cursor.execute(sql)
+    db2.commit()
+    return
+
  
 def generate_request(property_uri, start_date, end_date):
     
@@ -98,11 +132,15 @@ def generate_request(property_uri, start_date, end_date):
 
     # get branded queries from db
     email = session['email']
-    queries = Authorization.query.filter_by(email=email).first()
+    queries = Property.query.filter_by(search_property=property_uri, email=email).first()
     queriesfromdb = queries.brand_queries.split(',')
     print(queriesfromdb)
     flash('Using the following queries to categorize brand', queriesfromdb)
 
+    db2 = create_dbconexion()
+    cursor = db2.cursor()
+    create_table(db2,cursor,property_uri)
+    tablename = clean_name(property_uri).replace(".", '_')
 
     # Export to csv: generate a request for each day in range, execute the request and export
 
@@ -118,61 +156,11 @@ def generate_request(property_uri, start_date, end_date):
         # Execute the request and export the data to csv file and load into database
         response = execute_request(service, property_uri, request)
 
-        exportcsv(response, queriesfromdb, property_uri,date)
+        export_insert(response, queriesfromdb, property_uri,date,cursor,tablename)
         print('Wait 1 second')
         time.sleep(1)
 
-    # Call the funtion that will Loop over the csv files and store in db.
-
-    insert_into_db(property_uri)
-
-
-def insert_into_db(property_uri):
-
-    table_property =  clean_name(property_uri)
-    table_property = table_property.replace(".", '_')
-
-    try:
-        db2 = MySQLdb.connect(unix_socket = '/tmp/mysql.sock',host=DBHOST, user=DBUSER, passwd=DBPASSWORD, port = DBPORT, db=DBSCHEMA)
-        cursor = db2.cursor()
-        # create table and if doesn't exist
-        cursor.execute('CREATE TABLE IF NOT EXISTS %s;' % table_property)
-    except (MySQLdb.Error, MySQLdb.Warning) as e:
-        print(e)
-        return None
-
-    return
- 
-    # # define table
-    # print('Analyzing column types ...')
-    # col_types = get_col_types(input_file)
-    # print(col_types)
- 
-    # header = None
-    # for row in csv.reader(open(input_file)):
-    #     if header:
-    #         cursor.execute(insert_sql, row)
-    #     else:
-    #         header = [safe_col(col) for col in row]
-    #         schema_sql = get_schema(table, header, col_types)
-    #         print(schema_sql)
-    #         # create table
-    #         #cursor.execute('DROP TABLE IF EXISTS %s;' % table)
-    #         cursor.execute(schema_sql)
-    #         # create index for more efficient access
-    #         try:
-    #             cursor.execute('CREATE INDEX ids ON %s (id);' % table)
-    #         except MySQLdb.OperationalError:
-    #             pass # index already exists
- 
-    #         print('Inserting rows ...')
-    #         # SQL string for inserting data
-    #         insert_sql = get_insert(table, header)
- 
-    # # commit rows to database
-    # print('Committing rows to database ...')
-    # db.commit()
-
+    db2.commit()
 
     
 def execute_request(service, property_uri, request):
@@ -188,7 +176,7 @@ def execute_request(service, property_uri, request):
     '''
     return service.searchanalytics().query(siteUrl=property_uri, body=request).execute()
  
-def exportcsv(response, queriesfromdb, property_uri,date):
+def export_insert(response, queriesfromdb, property_uri,date,cursor,tablename):
     '''Prints out a response table.
  
     Each row contains 'query', 'country', 'date', 'clicks', 'impressions', 'ctr', 'position', 'querytype'
@@ -211,12 +199,7 @@ def exportcsv(response, queriesfromdb, property_uri,date):
     if not os.path.exists(folder):
         os.makedirs(folder)
 
-    # print row_format.format('Keys', 'Clicks', 'Impressions', 'CTR', 'Position')
-    # f = open("./TOP_QUERIES.csv", 'a', newline='')
-    # writer = csv.writer(f)
-    # writer.writerow( ('query', 'country', 'date', 'clicks', 'impressions', 'ctr', 'position', 'querytype') )
-
-    # save as csv
+    # createa filename and iterate over the response rows. Insert into csv and db
     filename = folder + '/' + clean_name(property_uri) + '-' + date +".csv"
     with open(filename, 'a', newline='') as f:
         writer = csv.writer(f)
@@ -227,23 +210,29 @@ def exportcsv(response, queriesfromdb, property_uri,date):
                     break
                 else:
                     querytype = 'non-branded'
-            rowtoinsert = (row['keys'][0], row['keys'][1], row['keys'][2], row['keys'][3], row['keys'][4],(urlparse.urlparse(row['keys'][3]).path).split('/')[0], row['clicks'], row['impressions'], round(row['ctr'],2), round(row['position'],2), querytype)  
-            print(type(rowtoinsert))       
+            
+            # Create row will all the data to insert  into csv and database table named as property
+            rowtoinsert = (row['keys'][0], # query
+                            row['keys'][1], # country
+                            row['keys'][2], # date
+                            row['keys'][3], # page
+                            row['keys'][4], # device
+                            'home' if str(row['keys'][3].split(property_uri)[1]).split('/')[0] == '' else str(row['keys'][3].split(property_uri)[1]).split('/')[0],  # url_parsed (urlparse.urlparse(row['keys'][3]).path).split('/')[0],
+                            row['clicks'], # clicks
+                            row['impressions'], # impressions
+                            round(row['ctr'],2), # ctr
+                            round(row['position'],2), #position
+                            querytype)
+
+            # Write to csv                   
             writer.writerow(rowtoinsert)
 
-    # for row in rows:
-    #     # keys = ''
-    #     # # Keys are returned only if one or more dimensions are requested.
-    #     # if 'keys' in row:
-    #     #     keys = u','.join(row['keys']).encode('utf-8')
-    #     # #print row_format.format(keys, row['clicks'], row['impressions'], row['ctr'], row['position'])
-    #     for query in queriesfromdb:
-    #         if re.match(row['keys'][0], query):
-    #             querytype = 'branded'
-    #             break
-    #         else:
-    #             querytype = 'non-branded'            
-    #     writer.writerow((row['keys'][0], row['keys'][1], row['keys'][2], row['clicks'], row['impressions'], round(row['ctr'],2), round(row['position'],2), querytype))
+            # Store into database
+            query_columns = "query,country,date_query,page,device,url_parsed,clicks,impressions,ctr,position,querytype"
+            insert_query = ''' INSERT INTO %s VALUES (%s) ''' % (tablename, rowtoinsert)
+            print(insert_query)
+            cursor.execute(insert_query)
+
     f.close()
 
     message = 'Your data has been exported to csv file'

@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, session, redirect, url_for, flash
-from models import db, User, Authorization
-from forms import SignupForm, LoginForm, AuthorizationForm, extractForm, GooglecodeForm
+from flask_sqlalchemy import SQLAlchemy
+from models import db, User, Authorization, Property
+from forms import SignupForm, LoginForm, AuthorizationForm, ExtractForm, GooglecodeForm
 from authorize import createflow, authorize, generate_credentials, get_properties
 from gscextract import generate_request, execute_request
 import requests
@@ -10,9 +11,11 @@ from oauth2client.client import OAuth2WebServerFlow, Storage
 import config
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:password@localhost/gscusers'
-db.init_app(app)
 app.secret_key = "development-key"
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:password@localhost/gscusers'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://login:pass@localhost/gscusers'
+
+db.init_app(app)
 
 
 @app.route("/")
@@ -28,32 +31,36 @@ def signup():
   if 'email' in session:
     return redirect(url_for('home'))
 
+  error = None
   form = SignupForm()
 
   if request.method == "POST":
     if form.validate() == False:
       return render_template('signup.html', form=form)
     else:
+      db.create_all()
+      flash('User created. Please, login now!')
       newuser = User(form.first_name.data, form.last_name.data, form.email.data, form.password.data)
       db.session.add(newuser)
       db.session.commit()
 
-      session['email'] = newuser.email
-      return redirect(url_for('home'))
+      return redirect(url_for('login'))
 
   elif request.method == "GET":
-    return render_template('signup.html', form=form)
+    return render_template('signup.html', form=form, error = error)
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
   if 'email' in session:
     return redirect(url_for('home'))
 
+  error = None
   form = LoginForm()
 
   if request.method == "POST":
     if form.validate() == False:
-      return render_template("login.html", form=form)
+      flash('Invalid username or password. Please try again! Did you sign up before?') 
+      return redirect(url_for('login'))
     else:
       email = form.email.data 
       password = form.password.data 
@@ -61,15 +68,17 @@ def login():
       user = User.query.filter_by(email=email).first()
       if user is not None and user.check_password(password):
         session['email'] = form.email.data
-        if os.stat("webmaster_credentials.dat").st_size == 0:
+        authorize = Authorization.query.filter_by(email=email).first()
+        if authorize is None:
           return redirect(url_for('home'))
         else:
           return redirect(url_for('step2'))
       else:
+        flash('There is no user with those details')
         return redirect(url_for('login'))
 
   elif request.method == 'GET':
-    return render_template('login.html', form=form)
+    return render_template('login.html', form=form, error = error)
 
 @app.route("/logout")
 def logout():
@@ -92,7 +101,7 @@ def home():
       email = session['email']
 
       # save the keys into database
-      newautho = Authorization(email,authoform.client_ID.data, authoform.client_secret.data, authoform.brand_queries.data)
+      newautho = Authorization(email,authoform.client_ID.data, authoform.client_secret.data)
       db.session.add(newautho)
       db.session.commit()
 
@@ -136,8 +145,13 @@ def step3():
   option_list2 = list(option_list)
   listofchoices = list(zip(option_list,option_list2))
 
-  propertyform = extractForm()
-  propertyform.searchproperty.choices = listofchoices
+  propertyform = ExtractForm()
+  propertyform.search_property.choices = listofchoices
+
+  useremail = session['email']
+
+  propertyindb = Property.query.with_entities(Property.search_property,Property.brand_queries).filter_by(email=useremail).all()
+
 
 
   if request.method == 'POST':
@@ -145,8 +159,20 @@ def step3():
       flash('Form validation not passed')
       return render_template('step3.html', form=propertyform, option_list=option_list)
     else:
+
+      # get the project and API key
+      email = session['email']
+
+      propertyindb = Property.query.filter_by(search_property=propertyform.search_property.data).first()
+      
+      if propertyindb is None:
+        # save the keys into database
+        newautho = Property(propertyform.search_property.data, propertyform.brand_queries.data,email)
+        db.session.add(newautho)
+        db.session.commit()
+
       # get the web property, start and end dates from form
-      property_uri = propertyform.searchproperty.data
+      property_uri = propertyform.search_property.data
       start_date = propertyform.start_date.data
       end_date = propertyform.end_date.data
 
@@ -156,11 +182,13 @@ def step3():
       if query_response:
         flash('New entry was successfully posted')
 
+      propertyindb = Property.query.with_entities(Property.search_property,Property.brand_queries).filter_by(email=useremail).all()
+      
       # return those results
-      return render_template('step3.html', form=propertyform, option_list=option_list, query_response=query_response)
+      return render_template('step3.html', form=propertyform, option_list=option_list, query_response=query_response, branded_queries=propertyindb)
 
   elif request.method == 'GET':
-    return render_template("step3.html", form=propertyform, option_list=option_list)
+    return render_template("step3.html", form=propertyform, option_list=option_list, branded_queries=propertyindb)
 
 
 if __name__ == "__main__":

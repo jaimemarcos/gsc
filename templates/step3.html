@@ -2,8 +2,8 @@
 
 {% block content %}
 
-<section class="grid-x">
-<div class="medium-3 cells secondary"> 
+<section class="grid-x grid-margin-x">
+<div class="medium-3 cell secondary"> 
   <ul class="vertical menu">
   <li><a href="/settings">Settings</a></li>
   <li><a href="#">Two</a></li>
@@ -14,56 +14,67 @@
   </div>
   {% endfor %}
 </div>
-<div class="medium-9 cells">
+<div class="medium-9 cell">
   <h2>Ready to extract</h2>
   <h3>Introduce your properties the start and end dates</h3>
-  <p>This will generate a csv file and a database in your system for your property</p>
-  <p class="warning callout">Important: Google Search console stores data for 90 days, and last 2 days data is not available.</p>
+  <p>This will generate a csv file in the output folder and record rows into a table in your system.</p>
+  <p class="warning callout"><small>Important: Google Search console stores data for 90 days, and last 2 days data is not available. End date should be at least 3 days before today</small></p>
   <div class="callout secondary">
     <form method="POST" action="/step3" id="properties">
       {{ form.csrf_token }}
-      <div class="medium-12 cells">
-        {{ form.searchproperty.label }}
-        {% if form.searchproperty.errors %}
-          {% for error in form.searchproperty.errors %}
-            <p class="error-message">{{ error }}</p>
+      <div class="medium-12 cell">
+        {{ form.search_property.label }}
+        {% if form.search_property.errors %}
+          {% for error in form.search_property.errors %}
+            <p class="label warning">{{ error }}</p>
           {% endfor %}
         {% endif %}
-        <select name="searchproperty" form="properties"> 
+        <select name="search_property" form="properties"> 
           {% for o in option_list %}
           <option value="{{ o }}">{{ o }}</option>
           {% endfor %}
         </select>
       </div>
-      
-      <div class="grid-x">
-      <div class="medium-6 cells">
+      <div class="medium-12 cell">
+        {{ form.brand_queries.label }}
+        {% if form.brand_queries.errors %}
+          {% for error in form.brand_queries.errors %}
+            <span class="label warning">{{ error }}</span>
+          {% endfor %}
+        {% endif %}
+        {{ form.brand_queries(placeholder="Enter your branded queries separated by commas") }}
+      </div>
+      <div class="grid-x grid-margin-x">
+      <div class="medium-6 cell">
         {{ form.start_date.label }}
         {% if form.start_date.errors %}
           {% for error in form.start_date.errors %}
-            <p class="error-message">{{ error }}</p>
+            <p class="label warning">{{ error }}</p>
           {% endfor %}
         {% endif %}
-
         {{ form.start_date(placeholder="Start date should be like this 2017-03-01") }}
       </div>
-
-      <div class="medium-6 cells">
+      <div class="medium-6 cell">
         {{ form.end_date.label }}
         {% if form.end_date.errors %}
           {% for error in form.end_date.errors %}
-            <p class="error-message">{{ error }}</p>
+            <p class="label warning">{{ error }}</p>
           {% endfor %}
         {% endif %}
-
         {{ form.end_date(placeholder="End date should be like this 2017-03-01") }}
       </div>
       </div>
       {{ form.submit(class="button") }}
     </form>
   </div>
-  <hr>
-
+  <div>
+    <h4>List of branded queries by property</h4>
+    {% for brand_queries in branded_queries %}
+      <strong>Property:</strong> {{ brand_queries[0]}} <br>
+      <strong>Brand terms:</strong> {{ brand_queries[1] }}
+      <hr>
+    {% endfor %}
+  </div>
 </div>
 </section>
 

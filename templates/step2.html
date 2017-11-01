@@ -4,17 +4,13 @@
 
 <section class="grid-x">
 <div class="medium-3 cells secondary">
-  <h2>Welcome</h2>
-    <a href="{{ authorizeURL }}">Authenticate to get started here.</a>
-    <br>
-    <p>Demo for the searchConsole.</p>
-    <a href="https://github.com/jaimemarcos/gscproject">See source code on Github</a>
+  
 </div>
 
 <div class="medium-9 cells">
-  <h3>Step 2</h3>
-  <p>Introduce the start and end date for what you want to extract the data.</p>
-  <p>Important: Google Search console stores data for 90 days, and last 2 days data is not available.</p>
+  <h2>Step 2: Get code and validate</h2>
+  <p>  <a href="{{ authorizeURL }}">Click on this URL to generate the code and authenticate</a></p>
+  <p class="warning callout">When clicking on the URL a code will be generated. Copy and paste it in the input field.</p>
 
   <div class="callout secondary">
     <form method="POST" action="/step2">

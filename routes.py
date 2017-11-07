@@ -170,6 +170,9 @@ def step3():
         newautho = Property(propertyform.search_property.data, propertyform.brand_queries.data,email)
         db.session.add(newautho)
         db.session.commit()
+      else:
+        propertyindb.brand_queries = propertyform.brand_queries.data
+        db.session.commit()
 
       # get the web property, start and end dates from form
       property_uri = propertyform.search_property.data
@@ -180,7 +183,7 @@ def step3():
       query_response = generate_request(property_uri, start_date, end_date)
 
       if query_response:
-        flash('New entry was successfully posted')
+        flash(query_response)
 
       propertyindb = Property.query.with_entities(Property.search_property,Property.brand_queries).filter_by(email=useremail).all()
       

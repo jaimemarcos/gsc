@@ -1,7 +1,4 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-#
-
+import config
 import httplib2
 import urllib.parse as urlparse
 import webbrowser
@@ -26,25 +23,24 @@ from oauth2client.file import Storage
 from flask_sqlalchemy import SQLAlchemy
 from flask import session, flash
 from models import db, User, Authorization, Property
-import config
 
 
 WEBMASTER_CREDENTIALS_FILE_PATH = "webmaster_credentials.dat"
 
-# output folder for csv files
-folder = 'output'
 
-# MySQL database information
- 
-DBUSER = 'root' # MySQL Username
-DBPASSWORD = 'password' # MySQL Password
-DBHOST = '127.0.0.1' # MySQL Host
-DBPORT = 3306 # MySQL Host Port
-DBSCHEMA = 'gscusers' # MySQL Database Name
- 
-# based on https://bitbucket.org/richardpenman/csv2mysql suppress annoying mysql warnings
-# warnings.filterwarnings(action='ignore', category=MySQLdb.Warning)
+# database variables
+if os.environ.get('GAE_INSTANCE'):
+    UNIX_SOC = '/cloudsql/' + CLOUDSQL_CONNECTION_NAME
+    DBHOST = 'localhost'
+    DBPORT = 3306
+else:
+    UNIX_SOC = '/tmp/mysql.sock'
+    DBHOST = '127.0.0.1'
+    DBPORT = 3306
 
+CLOUDSQL_USER = 'root'
+CLOUDSQL_PASSWORD = 'password'
+CLOUDSQL_DATABASE = 'gscusers'
 
 def dates_gen(start_date, end_date):
     # Generate list of dates in YYYY-MM-DD format from start_date to end_date
@@ -74,7 +70,7 @@ def clean_name(str):
 
 def create_dbconexion():
     try:
-        db2 = MySQLdb.connect(unix_socket = '/tmp/mysql.sock',host=DBHOST, user=DBUSER, passwd=DBPASSWORD, port = DBPORT, db=DBSCHEMA)
+        db2 = MySQLdb.connect(unix_socket = UNIX_SOC, host=DBHOST, user=CLOUDSQL_USER, passwd=CLOUDSQL_PASSWORD, port = DBPORT, db=CLOUDSQL_DATABASE)
     except (MySQLdb.Error, MySQLdb.Warning) as e:
         print(e)
         return None
@@ -89,7 +85,7 @@ def create_table(db2,cursor,property_uri):
     # (query, country, date_query, page, device, url_parsed, uri, clicks, impressions, ctr, position, querytype)
     sql = """CREATE TABLE IF NOT EXISTS `%s` (
         id INT AUTO_INCREMENT PRIMARY KEY,
-        query VARCHAR(400),
+        gsc_query VARCHAR(400),
         country VARCHAR(5),
         date_query DATE,
         page VARCHAR(200),
@@ -202,46 +198,38 @@ def export_insert(response, queriesfromdb, property_uri,date,cursor,tablename):
     if not os.path.exists(folder):
         os.makedirs(folder)
 
-    columns = "query, country, date_query, page, device, url_parsed, uri, clicks, impressions, ctr, position, querytype"
+    columns = "gsc_query, country, date_query, page, device, url_parsed, uri, clicks, impressions, ctr, position, querytype"
 
     # createa filename and iterate over the response rows. Insert into csv and db
-    filename = folder + '/' + clean_name(property_uri) + '-' + date +".csv"
-    with open(filename, 'a', newline='') as f:
-        writer = csv.writer(f)
-        for row in rows:
-            for query in queriesfromdb:
-                if re.search(query,row['keys'][0]):
-                    querytype = 'branded'
-                    break
-                else:
-                    querytype = 'non-branded'
-            
-            # Create row will all the data to insert  into csv and database table named as property
-            #if :
-            #clean_query = re.sub(r'\ or\ ', ' ', row['keys'][0]) # Found queries with 'or' expresions in search
-            # clean_query = re.sub(r'[^0-9a-zA-Z\n]+', '',  str(row['keys'][0]) ) # keep only alphanumeric
-            # clean_query = clean_query.replace(' or ', '')
-            rowtoinsert = ( re.sub(r'[^0-9a-zA-Z ]+', '', row['keys'][0]) if len(row['keys'][0]) < 100 else re.sub(r'[^0-9a-zA-Z ]+', '', row['keys'][0])[0:100], # clean the query to avoid special characters
-                            row['keys'][1], # country
-                            row['keys'][2], # date
-                            row['keys'][3], # page
-                            row['keys'][4], # device
-                            'home' if str(row['keys'][3].split(property_uri)[1]).split('/')[0] == '' else str(row['keys'][3].split(property_uri)[1]).split('/')[0],  # url_parsed (urlparse.urlparse(row['keys'][3]).path).split('/')[0],
-                            '/' if str(row['keys'][3].split(property_uri)[1]) == '' else '/' + str(row['keys'][3].split(property_uri)[1]), # get the URI
-                            row['clicks'], # clicks
-                            row['impressions'], # impressions
-                            round(row['ctr'],2), # ctr
-                            round(row['position'],2), #position
-                            querytype)
 
-            # Write to csv
-            print(rowtoinsert)                  
-            writer.writerow(rowtoinsert)
+    for row in rows:
+        for query in queriesfromdb:
+            if re.search(query,row['keys'][0]):
+                querytype = 'branded'
+                break
+            else:
+                querytype = 'non-branded'
+        
+        # Create row will all the data to insert  into csv and database table named as property
+        #if :
+        #clean_query = re.sub(r'\ or\ ', ' ', row['keys'][0]) # Found queries with 'or' expresions in search
+        # clean_query = re.sub(r'[^0-9a-zA-Z\n]+', '',  str(row['keys'][0]) ) # keep only alphanumeric
+        # clean_query = clean_query.replace(' or ', '')
+        rowtoinsert = ( re.sub(r'[^0-9a-zA-Z ]+', '', row['keys'][0]) if len(row['keys'][0]) < 100 else re.sub(r'[^0-9a-zA-Z ]+', '', row['keys'][0])[0:100], # clean the query to avoid special characters
+                        row['keys'][1], # country
+                        row['keys'][2], # date
+                        row['keys'][3], # page
+                        row['keys'][4], # device
+                        'home' if str(row['keys'][3].split(property_uri)[1]).split('/')[0] == '' else str(row['keys'][3].split(property_uri)[1]).split('/')[0],  # url_parsed (urlparse.urlparse(row['keys'][3]).path).split('/')[0],
+                        '/' if str(row['keys'][3].split(property_uri)[1]) == '' else '/' + str(row['keys'][3].split(property_uri)[1]), # get the URI
+                        row['clicks'], # clicks
+                        row['impressions'], # impressions
+                        round(row['ctr'],2), # ctr
+                        round(row['position'],2), #position
+                        querytype)
 
-            # Store into database
-            sql = "INSERT INTO %s" % (tablename) + " VALUES (NULL, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);" 
-            cursor.execute(sql, list(rowtoinsert))
-
-    f.close()
+        # Store into database
+        sql = "INSERT INTO %s" % (tablename) + " VALUES (NULL, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);" 
+        cursor.execute(sql, list(rowtoinsert))
 
     return

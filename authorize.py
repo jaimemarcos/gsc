@@ -17,10 +17,6 @@ def createflow(useremail):
 
 	user = Authorization.query.filter_by(email=useremail).first()
 
- 	# Copy your credentials from the console
-	#CLIENT_ID = '87687397921-ojapa7fnl3u8v81sc3v985ia6iqohpfa.apps.googleusercontent.com'
-	#CLIENT_SECRET = 'wcs7BlftanzlRZvY5b-VcI5D'
-
 	CLIENT_ID = user.project_key
 	CLIENT_SECRET = user.api_key
 
@@ -28,7 +24,7 @@ def createflow(useremail):
 	OAUTH_SCOPE = 'https://www.googleapis.com/auth/webmasters.readonly'
 
 	# Redirect URI for installed apps
-	REDIRECT_URI = 'http://localhost:5000/step2'
+	REDIRECT_URI = 'http://localhost:5000/verify'
 
 	# Run through the OAuth flow and retrieve credentials
 	flow = OAuth2WebServerFlow(CLIENT_ID, CLIENT_SECRET, OAUTH_SCOPE, REDIRECT_URI)

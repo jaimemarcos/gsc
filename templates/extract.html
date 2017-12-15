@@ -1,16 +1,12 @@
 {% extends "layoutlogged.html" %}
-
 {% block content %}
-
 <section class="grid-x grid-margin-x">
 <div class="medium-4 cell secondary"> 
   <ul class="vertical menu">
   <li><a href="/settings">Settings</a></li>
-</ul>
+  </ul>
   {% for message in get_flashed_messages() %}
-  <div class="primary callout">
-  <p>{{ message }}</p>
-  </div>
+  <div class="primary callout"><p>{{ message }}</p></div>
   {% endfor %}
   <hr>
     <h5>Branded queries by property</h5>
@@ -25,12 +21,12 @@
     </ol>
 </div>
 <div class="medium-8 cell">
-  <h2>Ready to extract</h2>
-  <h3>Select your property, branded queries to match, and the start to end dates</h3>
-  <p>This will generate a csv file in the output folder and record rows into a table in your system.</p>
+  <h1>Ready to extract</h1>
+  <h2>Select your property, branded queries to match, and the start to end dates</h2>
+  <p>This process will record rows into a table in your system. <b>It might take some minutes if you select long period or your property stores lot of data.</b></p>
   <p class="warning callout"><small>Important: Google Search console stores data for 90 days, and last 2 days data is not available. End date should be at least 3 days before today</small></p>
   <div class="callouts">
-    <form method="POST" action="/step3" id="properties">
+    <form method="POST" action="/extract" id="properties">
       {{ form.csrf_token }}
       <div class="medium-12 cell">
         {{ form.search_property.label }}

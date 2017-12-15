@@ -11,12 +11,22 @@ from oauth2client.client import OAuth2WebServerFlow, Storage
 import config
 
 app = Flask(__name__)
-app.secret_key = "development-key"
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:password@localhost/gscusers'
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://login:pass@localhost/gscusers'
+
+#app.secret_key = SECRET_KEY
+#app.config['SQLALCHEMY_DATABASE_URI'] =  'mysql://root:password@localhost/gscusers'
+
+app.config.from_object('config.BaseConfig')
+
+# if os.environ.get('GAE_INSTANCE'):
+#   # if is in google app egine get from config
+#   app.config.from_object('config.BaseConfig')
+# else:
+#   # if in local from the environment variable
+#   app.config.from_object(os.environ['APP_SETTINGS'])
+
+db = SQLAlchemy(app)
 
 db.init_app(app)
-
 
 @app.route("/")
 def index():
@@ -72,7 +82,7 @@ def login():
         if authorize is None:
           return redirect(url_for('home'))
         else:
-          return redirect(url_for('step2'))
+          return redirect(url_for('verify'))
       else:
         flash('There is no user with those details')
         return redirect(url_for('login'))
@@ -90,6 +100,12 @@ def home():
   if 'email' not in session:
     return redirect(url_for('login'))
 
+  useremail = session['email']
+  authorizationindb = Authorization.query.with_entities(Authorization.project_key,Authorization.api_key).filter_by(email=useremail).first()
+
+  if authorizationindb != None:
+    return redirect(url_for('verify'))
+
   authoform = AuthorizationForm()
 
   if request.method == 'POST':
@@ -105,14 +121,14 @@ def home():
       db.session.add(newautho)
       db.session.commit()
 
-      return redirect(url_for('step2'))
+      return redirect(url_for('verify'))
 
   elif request.method == 'GET':
     return render_template("home.html", form=authoform)
 
 
-@app.route("/step2", methods=["GET", "POST"])
-def step2():
+@app.route("/verify", methods=["GET", "POST"])
+def verify():
   if 'email' not in session:
     return redirect(url_for('login'))
 
@@ -123,7 +139,7 @@ def step2():
 
   if request.method == 'POST':
     if codeform.validate() == False:
-      return render_template('step2.html', form=codeform)
+      return render_template('verify.html', form=codeform)
     else:
       # get the google code form the from
       google_code = codeform.google_code.data
@@ -131,13 +147,13 @@ def step2():
       # generate the credentials
       credentials = generate_credentials(flow, google_code)
 
-    return redirect(url_for('step3'))
+    return redirect(url_for('extract'))
 
   elif request.method == 'GET':
-    return render_template("step2.html", authorizeURL=authorizeURL, form=codeform)
+    return render_template("verify.html", authorizeURL=authorizeURL, form=codeform)
 
-@app.route("/step3", methods=["GET", "POST"])
-def step3():
+@app.route("/extract", methods=["GET", "POST"])
+def extract():
   if 'email' not in session:
     return redirect(url_for('login'))
 
@@ -153,11 +169,10 @@ def step3():
   propertyindb = Property.query.with_entities(Property.search_property,Property.brand_queries).filter_by(email=useremail).all()
 
 
-
   if request.method == 'POST':
     if propertyform.validate() == False:
       flash('Form validation not passed')
-      return render_template('step3.html', form=propertyform, option_list=option_list)
+      return render_template('extract.html', form=propertyform, option_list=option_list)
     else:
 
       # get the project and API key
@@ -188,12 +203,40 @@ def step3():
       propertyindb = Property.query.with_entities(Property.search_property,Property.brand_queries).filter_by(email=useremail).all()
       
       # return those results
-      return render_template('step3.html', form=propertyform, option_list=option_list, query_response=query_response, branded_queries=propertyindb)
+      return render_template('extract.html', form=propertyform, option_list=option_list, query_response=query_response, branded_queries=propertyindb)
 
   elif request.method == 'GET':
-    return render_template("step3.html", form=propertyform, option_list=option_list, branded_queries=propertyindb)
+    return render_template("extract.html", form=propertyform, option_list=option_list, branded_queries=propertyindb)
+
+
+@app.route("/settings", methods=["GET", "POST"])
+def settings():
+  if 'email' not in session:
+    return redirect(url_for('login'))
+
+  authoform = AuthorizationForm()
+  useremail = session['email']
+  authorizationindb = Authorization.query.with_entities(Authorization.project_key,Authorization.api_key).filter_by(email=useremail).first()
+  flash(u'Your current keys are:', authorizationindb)
+  if request.method == 'POST':
+    if authoform.validate() == False:
+      flash('Please, introduce some valid keys')
+      return render_template('settings.html', form=authoform)
+    else:
+      # save the new keys into database where the email matches to the session
+      update = db.session.query(Authorization).filter_by(email=useremail).update({'project_key': authoform.client_ID.data,'api_key': authoform.client_secret.data})
+      db.session.commit()
+      # authorizationindb.project_key = authoform.client_ID.data
+      # authorizationindb.api_key = authoform.client_secret.data
+      # db.session.commit()
+      flash('Your keys have been updated')
+      return render_template("settings.html", form=authoform)
+      
+
+  elif request.method == 'GET':
+    return render_template("settings.html", form=authoform)
 
 
 if __name__ == "__main__":
   os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
-  app.run(debug=True)
+  app.run()

@@ -5,7 +5,7 @@ source activate gsc
 pip list
 To run the app in local server:
 
-python routes.py
+python main.py
 localhost:5000
 
 
@@ -14,6 +14,8 @@ pip freeze > requirements.txt
 touch Procfile (to tell heroku to use gunicorn to execute app)
 heroku create
 
+# Create enviroment variable APP_SETTINGS
+export 
 
 # HEROKU login
 heroku login (Better to do it in cmd)
@@ -27,7 +29,6 @@ git push heroku master (send to deploy)
 https://github.com/lpolepeddi/learning-flask/wiki/Deploying-Flask-to-Heroku
 
 heroku open
-
 
 
 # GITHUB #
@@ -53,3 +54,14 @@ Client ID
 Client secret
 wcs7BlftanzlRZvY5b-VcI5D
 
+
+GOOGLE CLOUD
+
+# Getting the details of the instance created in Google Cloud Storage SQL
+https://cloud.google.com/python/getting-started/using-cloud-sql
+
+gcloud sql instances describe gsc-db
+
+connectionName: logical-utility-185911:europe-west2:gsc-db
+
+cloud_sql_proxy.exe -instances="logical-utility-185911:europe-west2:gsc-db"=tcp:3306

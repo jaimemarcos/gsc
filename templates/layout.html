@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link href="https://fonts.googleapis.com/css?family=Oswald|Roboto:400,700" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Ubuntu|Roboto:400,700" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/foundation.css') }}" rel="stylesheet" >  
   </head>
   <body>
@@ -13,13 +13,15 @@
     <div class="top-bar" id="searchtool">
     <div class="top-bar-left">
     <ul class="menu" >
-      <li role="menuitem"><a href="/">Search Data</a></li>
-      <li role="menuitem"><a href="/about">About</a></li>
+      <li role="menuitem"><a href="/"><img src="{{ url_for('static', filename='img/keep-search-lg.png') }}"></a></li>
     </ul>
     </div>
     <div class="top-bar-right">
     <ul class="menu">
+    <li role="menuitem"><a href="/about">About</a></li>
+    {% if not session.logged_in %}
     <li><a href="/signup">Sign up</a></li>
+    {% endif %}
     <li><a href="/login" class="button">Login</a></li>
     </ul>
     </div>
@@ -29,21 +31,5 @@
       {% block content %}
       {% endblock %}
     </main>
-<!--     <footer class="secondary">
-      <div class="grid-x">
-      <div class="medium-6 cells">
-      <ul class="menu">
-      <li><a href="#">Legal</a></li>
-      <li><a href="#">Partner</a></li>
-      <li><a href="#">Explore</a></li>
-      </ul>
-      </div>
-      <div class="medium-6 cells">
-      <ul class="menu float-right">
-      <li class="menu-text">Copyright</li>
-      </ul>
-      </div>
-      </div>
-    </footer> -->
   </body>
 </html>

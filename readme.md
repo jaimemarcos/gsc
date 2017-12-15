@@ -1,70 +1,60 @@
-# ZURB Template
+# Keep Search tool
 
-[![devDependency Status](https://david-dm.org/zurb/foundation-zurb-template/dev-status.svg)](https://david-dm.org/zurb/foundation-zurb-template#info=devDependencies)
+Keep Search is Python-Flask app that allows to extract queries and pages data from Google Search Console API v3 and store it into a database. 
 
-**Please open all issues with this template on the main [Foundation for Sites](https://github.com/zurb/foundation-sites/issues) repo.**
+It has a signup, login (with hash password), capability to clasify your queries by branded vs non-branded, and url_parsed (extract directory from 'page' dimension)
 
-This is the official ZURB Template for use with [Foundation for Sites](http://foundation.zurb.com/sites). We use this template at ZURB to deliver static code to our clients. It has a Gulp-powered build system with these features:
+It uses Python 3.6 syntax. You can use it locally or deployed to a server. In my case, I use Google Cloud
 
-- Handlebars HTML templates with Panini
-- Sass compilation and prefixing
-- JavaScript module bundling with webpack
-- Built-in BrowserSync server
-- For production builds:
-  - CSS compression
-  - JavaScript compression
-  - Image compression
+columns = "gsc_query, country, date_query, page, device, url_parsed, uri, clicks, impressions, ctr, position, querytype"
 
-## Installation
+This is a very Beta version, but works fine 
 
-To use this template, your computer needs:
+## Why to extract GSC data?
 
-- [NodeJS](https://nodejs.org/en/) (0.12 or greater)
-- [Git](https://git-scm.com/)
+Google Search Console has numerous limitations:
 
-This template can be installed with the Foundation CLI, or downloaded and set up manually.
+•	It stores search queries for a limited period: after 90 days query on previous data is no longer available. 
+•	Interface only shows top 1,000 queries.
+•	Data can be filtered by device or country, etc., but only one at a time. 
+•	Data download is possible to csv files, but this can be time-consuming if this process is required regularly.
 
-### Using the CLI
 
-Install the Foundation CLI with this command:
+## Create a virtualenv
 
-```bash
-npm install foundation-cli --global
-```
+[![How to create a virtualenv]](http://docs.python-guide.org/en/latest/dev/virtualenvs/)
 
-Use this command to set up a blank Foundation for Sites project with this template:
+For virtualenv to install all files in the requirements.txt file, you need to activate your virtualenv
+
+## Install all the python libraries included in requirements.txt
+
+cd to the directory where requirements.txt is located, and run following command
 
 ```bash
-foundation new --framework sites --template zurb
+pip install -r requirements.txt
 ```
 
-The CLI will prompt you to give your project a name. The template will be downloaded into a folder with this name.
 
-Now `cd` to your project name and to start your project run 
+### Create a database
+
+This app uses a MySQL database called 'gscusers'. You can use MySQL workbench or the command line
 
 ```bash
-foundation watch
+CREATE DATABASE IF NOT EXISTS gscusers;
 ```
 
-### Manual Setup
+You can use other database of your choice like Postgres, but you will need to change the config.py file
 
-To manually set up the template, first download it with Git:
+### Modify config.py file
 
-```bash
-git clone https://github.com/zurb/foundation-zurb-template projectname
-```
+This file contain the localhost database and the live database. You will need to change the details.
 
-Then open the folder in your command line, and install the needed dependencies:
 
-```bash
-cd projectname
-npm install
-```
+### Run the app
 
-Finally, run `npm start` to run Gulp. Your finished site will be created in a folder called `dist`, viewable at this URL:
+Finally, run `python main.py` to run the app, viewable at this URL:
 
 ```
-http://localhost:8000
+http://localhost:5000
 ```
 
-To create compressed, production-ready assets, run `npm run build`.

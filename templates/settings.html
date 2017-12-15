@@ -1,0 +1,49 @@
+{% extends "layoutlogged.html" %}
+{% block content %}
+  <section class="grid-x grid-margin-x">
+    <div class="medium-3 cell secondary">
+      <ul class="vertical menu">
+        <li><a href="/extract">Extract data</a></li>
+      </ul>
+    </div>
+    <div class="medium-9 cell">
+      <h1>Settings</h1>
+      <h2>Change your Google project ID</h2>
+      <p>If you need to change your project settings. You can do it here.</p>
+      {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <ul class="no-bullet">
+          {% for category, message in messages %}
+            <li><p>{{ message }}</p><div class="primary callout">{{ category }}</div></li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+    <p>Introduce your Google Client ID and your Client Secret Key generated from Google API Credentials area</p>
+    <div class="callout secondary">
+      <form method="POST" action="/settings">
+        {{ form.hidden_tag() }}
+        <div class="form-group">
+          {{ form.client_ID.label }}
+          {% if form.client_ID.errors %}
+            {% for error in form.project_key.errors %}
+              <p class="error-message">{{ error }}</p>
+            {% endfor %}
+          {% endif %}
+          {{ form.client_ID(placeholder="Introduce your code project ID") }}
+        </div>
+        <div class="form-group">
+          {{ form.client_secret.label }}
+          {% if form.client_secret.errors %}
+            {% for error in form.client_secret.errors %}
+              <p class="error-message">{{ error }}</p>
+            {% endfor %}
+          {% endif %}
+          {{ form.client_secret(placeholder="Introduce your Google Secret key") }}
+        </div>
+        {{ form.submit(class="button") }}
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}

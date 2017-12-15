@@ -1,0 +1,30 @@
+{% extends "layoutlogged.html" %}
+{% block content %}
+  <section class="grid-x">
+    <div class="medium-3 cells secondary">
+      
+    </div>
+    <div class="medium-9 cells">
+      <h2>Get code and verify your credentials</h2>
+      <p>  <a href="{{ authorizeURL }}">Click on this URL to generate the code and authenticate</a></p>
+      <p class="warning callout">When clicking on the URL a code will be generated. Copy and paste it in the input field.</p>
+      <div class="callout">
+        <form method="POST" action="/verify">
+          {{ form.hidden_tag() }}
+          <div class="form-group">
+            {{ form.google_code.label }}
+            {% if form.google_code.errors %}
+              {% for error in form.google_code.errors %}
+                <p class="warning callout">{{ error }}</p>
+              {% endfor %}
+            {% endif %}
+            {{ form.google_code(placeholder="Copy the code from the 'code' parameter in the URL") }}
+          </div>
+          
+          {{ form.submit(class="button") }}
+        </form>
+      </div>
+      <hr>
+    </div>
+  </section>
+{% endblock %}

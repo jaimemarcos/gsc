@@ -1,24 +1,24 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link href="https://fonts.googleapis.com/css?family=Oswald|Roboto:400,700" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Ubuntu|Roboto:400,700" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/foundation.css') }}" rel="stylesheet" >  
   </head>
   <body>
     <header>
-    <div class="title-bar" data-responsive-toggle="realEstateMenu" data-hide-for="small" data-responsivetoggle="9e7bvm-responsivetoggle" style="display: none;">
+    <div class="title-bar" data-responsive-toggle="searchtool" data-hide-for="small" data-responsivetoggle="" style="display: none;">
     <button class="menu-icon" type="button" data-toggle=""></button>
     <div class="title-bar-title">Menu</div>
     </div>
-    <div class="top-bar" id="realEstateMenu">
+    <div class="top-bar" id="searchtool">
     <div class="top-bar-left">
     <ul class="menu" >
-      <li role="menuitem"><a href="/">Search Data</a></li>
-      <li role="menuitem"><a href="/about">About</a></li>
+      <li role="menuitem"><a href="/"><img src="{{ url_for('static', filename='img/keep-search-lg.png') }}"></a></li>
     </ul>
     </div>
     <div class="top-bar-right">
     <ul class="menu">
+    <li><a href="/about">About</a></li>
     <li><a href="/logout" class="button">Log out</a></li>
     </ul>
     </div>
@@ -28,32 +28,5 @@
       {% block content %}
       {% endblock %}
     </main>
-<!--     <footer class="secondary">
-      <div class="grid-x">
-      <div class="medium-6 cells">
-      <ul class="menu">
-      <li><a href="#">Legal</a></li>
-      <li><a href="#">Partner</a></li>
-      <li><a href="#">Explore</a></li>
-      </ul>
-      </div>
-      <div class="medium-6 cells">
-      <ul class="menu float-right">
-      <li class="menu-text">Copyright</li>
-      </ul>
-      </div>
-      </div>
-    </footer> -->
   </body>
-  <script type="text/javascript">
-    window.onhashchange = function() { 
-       var string = document.documentURI;
-       if (string.startsWith('/step2')){
-          console.log('it starts');
-          var params = new URLSearchParams(document.location.search.substring(1));
-          var code = params.get("code");
-          document.getElementById("google_code").value = code;
-       }  
-    }
-  </script>
 </html>

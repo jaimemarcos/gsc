@@ -1,4 +1,6 @@
-application: gscproject-183423
+# This is the configuration file for Google App
+# https://cloud.google.com/appengine/docs/flexible/python/configuring-your-app-with-app-yaml
+
 runtime: python
 env: flex
 entrypoint: gunicorn -b :$PORT main:app
@@ -6,10 +8,13 @@ entrypoint: gunicorn -b :$PORT main:app
 runtime_config:
   python_version: 3
 
-# [START handlers]
-handlers:
-- url: /static
-  static_dir: static
-- url: /.*
-  script: main.app
-# [END handlers]
+
+#[START cloudsql_settings]
+beta_settings:
+    # If using Cloud SQL, uncomment and set this value to the Cloud SQL
+    # connection name, e.g.
+    #   "project:region:cloudsql-instance"
+    # You must also update the values in config.py.
+    #
+    cloud_sql_instances: "logical-utility-185911:europe-west2:gsc-db"
+#[END cloudsql_settings]

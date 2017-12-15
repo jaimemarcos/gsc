@@ -1,11 +1,57 @@
 {% extends "layout.html" %}
-
 {% block content %}
-	<section class="grid-x">
-    <h2>About Search Conse extract tool</h2>
-    <p>This is a web app that will allow you to extract Google Search Console queries and pages to a csv file and a database</p>
-     <br>
-    <p>Demo for the searchConsole.</p>
-    <a href="https://github.com/jaimemarcos/gscproject">See source code on Github</a>
-	</section>
+<section class="grid-x">
+<div class="medium-12 cells">
+<h1>About Keep Search app</h1>
+<p>'Keep Search' is a Python-Flask web app that allows to extract Google Search Console queries and pages to a database.</p>
+<p>It was developed by Jaime Marcos Hernandez, as part of his final project at Higher Diploma in Data Analytics in National College of Ireland.</p>
+<p>You can find the full code in GitHub:  <a href="https://github.com/jaimemarcos/gscproject">See source code on Github</a></p>
+<p>In order to export data from Google Search Console you will need:</p>
+<ol>
+<li>A Google Account (make sure to sign up with same email used for your Google Search Console account).</li>
+<li>A property or more in <a href="https://www.google.com/webmasters/tools/home?hl=en">Google Search Console</a>.</li>
+<li>Create a project in Google Cloud.</li>
+<li>Generate API keys for your project.</li>
+</ol>
+<h2>Step 1: Signup into your Google account</h2>
+<p>If you do not already have a Google account, <a href="https://www.google.com/accounts">sign up</a>.</p>
+<h2>Step 2: Visit Google Cloud Platform</h2>
+<p>Visit <a href="http://console.developers.google.com">console.developers.google.com</a> and sign in with your Google account.</p>
+<h2>Step 3: Agree terms and coditions</h2>
+<p>Your wil be probably asked to  to agree to the terms and conditions. Select <strong>Yes</strong>, and click on <strong>Agree and Continue.</strong>.</p>
+<h2>Step 4: Create a new project</h2>
+<p>Click on the plus button to create a new project.</p>
+<img src="/static/img/step4-create-project.png">
+<h2>Step 5: Save the project</h2>
+<p>Once your project is generated, a notification will be generated to warn you in the top right corner.</p>
+<img src="/static/img/step5-save-project.png">
+<h2>Step 6: Select your project name</h2>
+<p>You need to make sure that your project is selected at the top left drop down menu.</p>
+<img src="/static/img/step6-project-created.png">
+<h2>Step 7: Find Search Console API</h2>
+<p>On the left menu, click on 'Library'. You need to look for the Search Console API in input box.</p>
+<img src="/static/img/step7-find-search-console-api.png">
+<h2>Step 8: Enable API</h2>
+<p>To access private data, Search Console API needs to be enabled.</p>
+<img src="/static/img/step8-enable-api.png">
+<h2>Step 9: Create credentials</h2>
+<p>This will generate the credentials to authorize the use of the API.</p>
+<img src="/static/img/step9-create-credentials.png">
+<h2>Step 10: Configure consent</h2>
+<p>The consent is the screen that will appear to the user within the browser, asking for permission when the API is requested.</p>
+<img src="/static/img/step10-configure-consent.png">
+<h2>Step 11: Make sure to save the consent</h2>
+<p>Give it a name and save it.</p>
+<img src="/static/img/step11-save-consent.png">
+<h2>Step 12: Create credentials</h2>
+<p>For this app, you need to select Other, and name the credentials.</p>
+<img src="/static/img/step12-create-credentials.png">
+<h2>Step 13: Copy client ID and API keys</h2>
+<img src="/static/img/step13-copy-client-id-secrets.png">
+<h2>Step 14: Save your credentials into Keep Search app</h2>
+<p>Once you log into the app, you will be required the credentials you generate in Google Cloud.</p>
+<img src="/static/img/step14-save-credentials.png">
+<p>You are done!</p>
+</div>
+</section>
 {% endblock %}

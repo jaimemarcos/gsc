@@ -21,26 +21,27 @@ from apiclient.discovery import build
 from oauth2client.client import OAuth2WebServerFlow
 from oauth2client.file import Storage
 from flask_sqlalchemy import SQLAlchemy
-from flask import session, flash
+from flask import session, flash, app
 from models import db, User, Authorization, Property
 
 
 WEBMASTER_CREDENTIALS_FILE_PATH = "webmaster_credentials.dat"
 
 
-# database variables
-if os.environ.get('GAE_INSTANCE'):
-    UNIX_SOC = '/cloudsql/' + CLOUDSQL_CONNECTION_NAME
-    DBHOST = 'localhost'
-    DBPORT = 3306
-else:
-    UNIX_SOC = '/tmp/mysql.sock'
-    DBHOST = '127.0.0.1'
-    DBPORT = 3306
 
-CLOUDSQL_USER = 'root'
-CLOUDSQL_PASSWORD = 'password'
-CLOUDSQL_DATABASE = 'gscusers'
+# # database variables
+# if os.environ.get('GAE_INSTANCE'):
+#     UNIX_SOC = '/cloudsql/' + CLOUDSQL_CONNECTION_NAME
+#     DBHOST = 'localhost'
+#     DBPORT = 3306
+# else:
+#     UNIX_SOC = '/tmp/mysql.sock'
+#     DBHOST = '127.0.0.1'
+#     DBPORT = 3306
+
+# CLOUDSQL_USER = 'root'
+# CLOUDSQL_PASSWORD = 'password'
+# CLOUDSQL_DATABASE = 'gscusers'
 
 def dates_gen(start_date, end_date):
     # Generate list of dates in YYYY-MM-DD format from start_date to end_date
@@ -70,7 +71,7 @@ def clean_name(str):
 
 def create_dbconexion():
     try:
-        db2 = MySQLdb.connect(unix_socket = UNIX_SOC, host=DBHOST, user=CLOUDSQL_USER, passwd=CLOUDSQL_PASSWORD, port = DBPORT, db=CLOUDSQL_DATABASE)
+        db2 = MySQLdb.connect(unix_socket = config.UNIX_SOC, host=config.DBHOST, user=config.CLOUDSQL_USER, passwd=config.CLOUDSQL_PASSWORD, port = config.DBPORT, db=config.CLOUDSQL_DATABASE)
     except (MySQLdb.Error, MySQLdb.Warning) as e:
         print(e)
         return None
